@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+           <link rel="stylesheet" href="P3.2 COMBINEDPROJECT copy.css"> <!-- Link your stylesheet here -->
+
+</head>
+<body>
+    </head>
+    <body>
+
+<h2 id="heading"></h2>
+<h3 id="menudisplay"></h3>
+<h3 id="paragraph"></h3>
+
+<h4 id="description1"></h4>
+<h4 id="description2"></h4>
+<h4 id="description3"></h4>
+<h4 id="description4"></h4>
+<h4 id="description5"></h4>
+<h4 id="description6"></h4>
+<h4 id="description7"></h4>
+
+<h4 id="characterScreenExpo"></h4>
+<h4 id="name"></h4>
+<h4 id="xp"></h4>
+<h4 id="level"></h4>
+<h4 id="class"></h4>
+<h4 id="background"></h4>
+<h4 id="strength"></h4>
+<h4 id="dexterity"></h4>
+<h4 id="constitution"></h4>
+<h4 id="intelligence"></h4>
+<h4 id="wisdom"></h4>
+<h4 id="charisma"></h4>
+<h4 id="maxHealth"></h4>
+<h4 id="maxSpellSlots"></h4>
+<h4 id="maxPowerSlots"></h4>
+<h4 id="currentHealth"></h4>
+<h4 id="currentSpellSlots"></h4>
+<h4 id="currentPowerSlots"></h4>
+
+<h4 id="currentGold"></h4>
+
+<div class="application">
+    <div class="panel background-panel"></div>
+    <div class="panel information-panel" id="informationPanel">
+        <div id="characterInfo" class="hidden">
+
+        </div>
+        <p>
+            
+        </p>
+    </div>
+    <div class="panel player-input-panel">
+        <div class="text-panel">
+            <div id="containerId">
+                <h2 id="heading"></h2>
+                <div id="descriptionContainer"></div>
+                <ul id="choicesList"></ul>
+            </div>
+        </div>
+        <div class="button-panel">
+            <div class="button-column">
+                <button onclick="characterScreen()">Character Info</button>
+                <button onclick="toggleInformationPanel()">Toggle Info Panel</button>
+                <button onclick="forceLevelUp(3)">Force Level Up</button>
+            </div>
+            <div class="button-column">
+                <button onclick="gameScreen()">World</button>
+                <button onclick="buttonClick(5)">Button 5</button>
+                <button onclick="debugMenu()">DebugMenu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script>
+var introText;
+var choiceOne;
+var choiceTwo;
+var choiceThree;
+var choiceFour;
+var choiceFive;
+var choiceSix;
+var choiceSeven;
+let bug = 0;
+let statPoints = 24;
+//
+
+//
+
+//
+
+// BACK-END MECHANICS
+
+//
+
+//
+
+//
+// Define arrays of XP requirements for each class and level
+const classXpRequirements = {
+  Martial: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+  Magic: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+  Spellblade: [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
+};
+
+// Define arrays of level-up attributes for each class
+const classLevelAttributes = {
+  Martial: [
+    { health: 15, slots: 0, power: 1},
+    { health: 30, slots: 0, power: 3},
+    { health: 45, slots: 0, power: 5},
+    { health: 60, slots: 0, power: 7},
+    { health: 75, slots: 0, power: 7},
+    { health: 85, slots: 0, power: 10},
+    { health: 95, slots: 0, power: 11},
+    { health: 105, slots: 0, power: 12},
+    { health: 115, slots: 0, power: 13},
+    { health: 125, slots: 0, power: 14},
+  ],
+  Magic: [
+    { health: 12, slots: 6, power: 0},
+    { health: 24, slots: 8, power: 0},
+    { health: 36, slots: 10, power: 0},
+    { health: 48, slots: 12, power: 0},
+    { health: 60, slots: 14, power: 0},
+    { health: 65, slots: 16, power: 0},
+    { health: 70, slots: 18, power: 0},
+    { health: 75, slots: 19, power: 0},
+    { health: 80, slots: 20, power: 0},
+    { health: 85, slots: 21, power: 0},
+  ],
+  Spellblade: [
+    { health: 14, slots: 3, power: 3},
+    { health: 26, slots: 4, power: 4},
+    { health: 38, slots: 5, power: 5},
+    { health: 50, slots: 6, power: 6},
+    { health: 62, slots: 7, power: 7},
+    { health: 69, slots: 8, power: 8},
+    { health: 74, slots: 9, power: 9},
+    { health: 79, slots: 9, power: 9},
+    { health: 84, slots: 10, power: 10},
+    { health: 19, slots: 11, power: 11},
+  ],
+};
+function applyBackgroundBonuses(player) {
+  const { characterBackground } = player;
+
+  switch (characterBackground) {
+      case "Oathsworn Conscript":
+            player.characterWisdom += 1;
+            player.characterStrength += 1;
+            player.characterKeywords.push("Low-born Human Ancestry")
+            setCharacterAttributes(player);
+      break;
+      
+      case "Oathsworn Lieutenant":
+            player.characterConstitution += 3;
+            player.characterKeywords.push("Low-born Human Ancestry")
+            setCharacterAttributes(player);
+      break;
+      
+      case "Oathsworn Commander":
+            player.characterConstitution += 1;
+            player.characterCharisma += 2;
+            player.characterKeywords.push("Influence")
+            setCharacterAttributes(player);
+      break;
+      
+      case "Oathsworn Lord":
+            player.characterCharisma += 4;
+            player.characterKeywords.push("Lord")
+            setCharacterAttributes(player);
+      break;
+      
+      case "Oracle":
+            player.characterSpellList.push("Radiant Bolt", "Cure Wounds")
+            player.characterKeywords.push("Oracle")
+            setCharacterAttributes(player);
+      break;
+
+      case "The Shrouded":
+            player.characterSpellList.push("Speak With Dead")
+            setCharacterAttributes(player);
+      break;
+
+      case "Tencaster Mage":
+            player.characterSpellList.push("Chaos Bolt")
+            setCharacterAttributes(player);
+      break;
+      default:
+      console.log(`No bonuses applied for background: ${characterBackground}`);
+      break;
+  }
+}
+
+// Function to initialize Spell and Power slots based on character's background
+function initializeBackgroundSlots(player) {
+  const { characterBackground, attributes } = player;
+
+  switch (characterBackground) {
+    case "Oathsworn Conscript":
+            player.attributes.power += 3;
+            player.currentPowerSlots += 3;
+      break;
+      
+      case "Oathsworn Lieutenant":
+            player.attributes.power += 2;
+            player.currentPowerSlots += 2;
+      break;
+      
+      case "Oathsworn Commander":
+            player.attributes.power += 1;
+            player.currentPowerSlots += 1;
+      break;
+      
+      case "Oathsworn Lord":
+      break;
+      
+      case "Oracle":
+            player.attributes.slots += 2;
+            player.currentSpellSlots += 2;
+      break;
+
+      case "The Shrouded":
+            player.attributes.slots += 2;
+            player.currentSpellSlots += 2;
+      break;
+
+      case "Tencaster Mage":
+            player.attributes.slots += 3;
+            player.currentSpellSlots += 3;
+      break;
+    // Add cases for other backgrounds as needed
+
+    default:
+      console.log(`No slots initialized for background: ${characterBackground}`);
+      break;
+  }
+}
+
+// Modified setCharacterAttributes function
+function setCharacterAttributes(player) {
+  const { className, level, characterConstitution } = player;
+
+  if (classLevelAttributes[className] && classLevelAttributes[className][level - 1]) {
+    const attributes = classLevelAttributes[className][level - 1];
+    player.attributes = { ...attributes };
+
+    // Apply constitution bonus to health
+    player.attributes.health += characterConstitution;
+
+    // Initialize Spell and Power slots based on class
+    player.attributes.power = player.attributes.power;
+    player.attributes.slots = player.attributes.slots;
+
+    // Initialize current health, power slots, and spell slots based on class defaults
+    player.currentHealth = player.attributes.health;
+    player.currentPowerSlots = player.attributes.power;
+
+    // Initialize background-specific slots
+    initializeBackgroundSlots(player);
+  } else {
+    console.error(`Invalid className (${className}) or level (${level})`);
+  }
+}
+
+function levelUp(player) {
+  const { className, level, characterConstitution } = player;
+  if (classLevelAttributes[className] && classLevelAttributes[className][level]) {
+    const levelAttributes = classLevelAttributes[className][level];
+    player.attributes = { ...levelAttributes };
+
+    // Apply constitution bonus to health
+    player.attributes.health += characterConstitution;
+
+    // Update current health, power slots, and spell slots based on class defaults
+    player.currentHealth = player.attributes.health;
+    player.currentPowerSlots = player.attributes.power;
+    player.currentSpellSlots = player.attributes.slots;
+  } else {
+    console.error(`Invalid className (${className}) or level (${level}) for level up`);
+  }
+}
+
+function updatePlayerXP(player, newXPGained) {
+  const { className } = player;
+
+  if (classXpRequirements[className]) { // Check if className is valid
+    const xpRequirements = classXpRequirements[className];
+    const currentXP = player.XP;
+    let level = player.level; // Initialize level here
+
+    // Add the new XP to the player's current XP
+    player.XP += newXPGained;
+
+    while (level < xpRequirements.length && player.XP >= xpRequirements[level - 1]) {
+      // Player has leveled up
+      player.level++;
+      level++; // Increment level
+      setCharacterAttributes(player);
+      levelUpSequence();
+      console.log(`Player has gained a level`);
+    }
+}
+}
+
+function levelUpSequence() {
+  w = window.prompt(`Congratulations, you have gained a level. You are now level ${player.level}! You are rewarded one permanent point to put in any of the following player statistics: Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma. Which stat would you like to increase? Input 1 for Strength, 2 for Dexterity, etc.`);
+  w = Number(w);    
+  switch (w) {
+    case 1:
+      player.characterStrength++;
+      alert("Strength has increased by 1!");
+      break;
+    case 2:
+      player.characterDexterity++;
+      alert("Dexterity has increased by 1!");
+      break;
+    case 3:
+      player.characterConstitution++; // Increment the player's constitution
+      alert("Constitution has increased by 1!");
+      break;
+    case 4:
+      player.characterIntelligence++;
+      alert("Intelligence has increased by 1!");
+      break;
+    case 5:
+      player.characterWisdom++;
+      alert("Wisdom has increased by 1!");
+      break;
+    case 6:
+      player.characterCharisma++;
+      alert("Charisma has increased by 1!");
+      break;
+    default:
+      console.log(`You didn't input a valid value!`);
+  }
+}
+//
+
+//
+
+//
+
+// BACK-END CODING
+
+//
+
+//
+
+//
+
+function handleChoiceClick(choice, index) {
+    // Additional logic if needed
+    choice.onClick();
+}
+
+function allocateStat(statName) {
+    player[statName] = window.prompt(`You have a total of ${statPoints} points to spend amongst the following Stats: Strength, Dexterity, Constitution, Intelligence, Wisdom, Charisma. How many points would you like to spend in ${statName}?`);
+    statPoints -= player[statName];
+    player[statName] = Number(player[statName]);
+}
+        function clearDescriptions() {
+            var descriptionContainer = document.getElementById('descriptionContainer');
+            if (descriptionContainer) {
+                descriptionContainer.innerHTML = '';
+            }
+        }
+
+        function setupChoices(choicesArray, baseDescription, backgroundImage) {
+    clearDescriptions();
+
+    var container = document.getElementById('containerId');
+
+    // Check if the description container exists, if not, create it
+    var descriptionText = document.getElementById('descriptionContainer');
+    if (!descriptionText) {
+        descriptionText = document.createElement("div");
+        descriptionText.id = 'descriptionContainer';
+        descriptionText.style.fontSize = "20px";  // Set the font size
+        container.appendChild(descriptionText);
+    }
+
+    // Update the description text
+    descriptionText.innerHTML = baseDescription;
+
+    // Check if the choices list exists, if not, create it
+    var existingList = document.getElementById('choicesList');
+    if (existingList) {
+        existingList.remove();
+    }
+
+    // Create a new unordered list element
+    var list = document.createElement("ul");
+    list.id = 'choicesList';
+
+    for (var i = 0; i < choicesArray.length; i++) {
+        var listItem = document.createElement("li");
+        var choice = choicesArray[i];
+
+        var clickableText = document.createElement("span");
+        clickableText.textContent = choice.description;
+        clickableText.className = "clickable-text";
+
+        // Use a closure to capture the value of choice for each iteration
+        (function (nextState, onClick) {
+            clickableText.addEventListener("click", function () {
+                if (typeof onClick === 'function') {
+                    onClick();
+                } else if (typeof nextState === 'function') {
+                    nextState();
+                }
+            });
+        })(choice.nextState, choice.onClick);
+
+        listItem.appendChild(clickableText);
+        list.appendChild(listItem);
+    }
+
+    // Append the new unordered list to the container
+    container.appendChild(list);
+
+    // Set the background image
+    document.querySelector('.background-panel').style.backgroundImage = `url(${backgroundImage})`;
+}
+
+//
+
+//
+
+//
+
+// Player Object
+
+//
+
+//
+
+//
+const player = {
+  name: "playerName",
+  XP: 0, // Initial XP
+  level: 1, // Initial level
+  className: "Magic",
+  characterBackground: "",
+  characterStrength: 0,
+  characterDexterity: 0,
+  characterConstitution: 0,
+  characterIntelligence: 0,
+  characterWisdom: 0,
+  characterCharisma: 0,
+
+  characterCoinPurseGold: 30,
+  characterCoinPurseSilver: 0,
+
+  attributes: {
+    health: 0,
+    power: 0,
+    slots: 0, // Initial slots
+  },
+  currentHealth: 0,
+  currentSpellSlots: 0,
+  currentPowerSlots: 0,
+
+  characterSpellList: [],
+  characterInventory: [],
+  characterKeywords: [],
+};
+
+// Copy the attributes from the first element of the selected class's levelAttributes
+for (const key in classLevelAttributes[player.className][0]) {
+  player.attributes[key] = classLevelAttributes[player.className][0][key];
+}
+
+// Initialize current health, power slots, and spell slots based on class defaults
+player.currentHealth = player.attributes.health;
+player.currentPowerSlots = player.attributes.power;
+player.currentSpellSlots = player.attributes.slots;
+//
+
+//
+
+//
+
+// MENUS
+
+//
+
+//
+
+//
+
+function characterScreen() {
+// Hide gameScreen elements
+document.getElementById("heading").hidden = true
+document.getElementById("description1").hidden = true, document.getElementById("choice1").hidden = true
+document.getElementById("description2").hidden = true, document.getElementById("choice2").hidden = true
+document.getElementById("description3").hidden = true, document.getElementById("choice3").hidden = true
+document.getElementById("description4").hidden = true, document.getElementById("choice4").hidden = true
+document.getElementById("description5").hidden = true, document.getElementById("choice5").hidden = true
+document.getElementById("description6").hidden = true, document.getElementById("choice6").hidden = true
+document.getElementById("description7").hidden = true, document.getElementById("choice7").hidden = true
+
+
+// Show characterScreen elements
+document.getElementById('characterScreenExpo').innerHTML = "Your character Statstics!"
+document.getElementById('name').innerHTML = "Name: " + player.name
+document.getElementById('xp').innerHTML = "XP: " + player.XP
+document.getElementById('level').innerHTML = "Level: " + player.level
+document.getElementById('class').innerHTML = "Class: " + player.className
+document.getElementById('background').innerHTML = "Background: " + player.characterBackground
+document.getElementById('strength').innerHTML = "Character Strength: " + player.characterStrength
+document.getElementById('dexterity').innerHTML = "Character Dexterity: " + player.characterDexterity
+document.getElementById('constitution').innerHTML = "Character Constitution: " + player.characterConstitution
+document.getElementById('intelligence').innerHTML = "Character Intelligence: " + player.characterIntelligence
+document.getElementById('wisdom').innerHTML = "Character Wisdom: " + player.characterWisdom
+document.getElementById('charisma').innerHTML = "Character Charisma: " + player.characterCharisma
+document.getElementById('maxHealth').innerHTML = "Max Health: " + player.attributes.health
+document.getElementById('maxSpellSlots').innerHTML = "Max Spell Slots: " + player.attributes.slots
+document.getElementById('maxPowerSlots').innerHTML = "Max Power Slots: " + player.attributes.power
+document.getElementById('currentHealth').innerHTML = "Current Health: " + player.currentHealth
+document.getElementById('currentSpellSlots').innerHTML = "Current Spell Slots: " + player.currentSpellSlots
+document.getElementById('currentPowerSlots').innerHTML = "Current Power Slots: " + player.currentPowerSlots
+
+}
+
+function gameScreen() {
+  // Hide characterScreen elements
+document.getElementById('characterScreenExpo').hidden = true;
+document.getElementById('name').hidden = true;
+document.getElementById('xp').hidden = true;
+document.getElementById('level').hidden = true;
+document.getElementById('class').hidden = true;
+document.getElementById('background').hidden = true;
+document.getElementById('strength').hidden = true;
+document.getElementById('dexterity').hidden = true;
+document.getElementById('constitution').hidden = true;
+document.getElementById('intelligence').hidden = true;
+document.getElementById('wisdom').hidden = true;
+document.getElementById('charisma').hidden = true;
+document.getElementById('maxHealth').hidden = true;
+document.getElementById('maxSpellSlots').hidden = true;
+document.getElementById('maxPowerSlots').hidden = true;
+document.getElementById('currentHealth').hidden = true;
+document.getElementById('currentSpellSlots').hidden = true;
+document.getElementById('maxPowerSlots').hidden = true;
+document.getElementById('currentPowerSlots').hidden = true;
+
+ // Show gameScreen elements
+document.getElementById("heading").hidden = false;
+document.getElementById("description1").hidden = false, document.getElementById("choice1").hidden = false,
+document.getElementById("description1").hidden = false, document.getElementById("choice1").hidden = false,
+document.getElementById("description2").hidden = false, document.getElementById("choice2").hidden = false,
+document.getElementById("description3").hidden = false, document.getElementById("choice3").hidden = false,
+document.getElementById("description4").hidden = false, document.getElementById("choice3").hidden = false,
+document.getElementById("description5").hidden = false, document.getElementById("choice5").hidden = false,
+document.getElementById("description6").hidden = false, document.getElementById("choice6").hidden = false,
+document.getElementById("description7").hidden = false, document.getElementById("choice7").hidden = false
+
+}
+
+function inventoryScreen() {
+}
+
+function journalScreen() {
+}
+
+function characterScreen() {
+    const informationPanel = document.getElementById('informationPanel');
+    const characterInfo = document.getElementById('characterInfo');
+
+    if (characterInfo.classList.contains('hidden')) {
+        // Character info is hidden, show it
+        characterInfo.innerHTML = generateCharacterInfo();
+    } else {
+        // Character info is visible, hide it
+        characterInfo.innerHTML = ''; // Clear character info
+    }
+
+    characterInfo.classList.toggle('hidden');
+}
+
+function generateCharacterInfo() {
+    // Create a string containing character information
+    const infoString = `
+        <p><strong>Character Information:</strong></p>
+        <p><strong>Character Name:</strong> ${player.name}</p>
+        <p><strong>Strength:</strong> ${player.characterStrength}</p>
+        <p><strong>Dexterity:</strong> ${player.characterDexterity}</p>
+        <p><strong>Constitution:</strong> ${player.characterConstitution}</p>
+        <p><strong>Wisdom:</strong> ${player.characterWisdom}</p>
+        <p><strong>Intelligence:</strong> ${player.characterIntelligence}</p>
+        <p><strong>Charisma:</strong> ${player.characterCharisma}</p>
+        <p><strong>Class:</strong> ${player.className}</p>
+        <p><strong>Background:</strong> ${player.characterBackground}</p>
+        <p><strong>Maxiumum Health:</strong> ${player.attributes.health}</p>
+        <p><strong>Maxiumum Spell Slots:</strong> ${player.attributes.slots}</p>
+        <p><strong>Maxiumum Power Slots:</strong> ${player.attributes.power}</p>
+        <p><strong>Keywords:</strong> ${player.characterKeywords.join(', ')}</p>
+        <p><strong>Spell List:</strong> ${player.characterSpellList.join(', ')}</p>
+        <!-- Add more information as needed -->
+    `;
+
+    return infoString;
+}
+        
+    function toggleInformationPanel() {
+    const informationPanel = document.getElementById('informationPanel');
+    informationPanel.classList.toggle('hidden');
+}
+
+
+//
+
+//
+
+//
+
+// Character Creation States
+
+//
+
+//
+//
+function characterCreation1() {
+    const baseDescription = "What class would you like to play? The Martial class is all about fighting with weapons, the Mage with magic, and the Spellblade is equally good with both.";
+    const choicesArray = [
+        {
+            description: "Martial (Fighter)",
+            nextState: characterCreation2,
+            onClick: function () {
+                player.className = "Martial";
+                characterCreation2();
+            }
+        },
+        {
+            description: "Magic (Mage)",
+            nextState: characterCreation2,
+            onClick: function () {
+                player.className = "Magic";
+                characterCreation2();
+            }
+        },
+        {
+            description: "Spellblade (Mixed)",
+            nextState: characterCreation2,
+            onClick: function () {
+                player.className = "Spellblade";
+                characterCreation2();
+            }
+        }
+    ];
+    setupChoices(choicesArray, baseDescription, handleChoiceClick);
+}
+
+function characterCreation2() {
+    if (bug === 1) {
+        characterCreation3();
+    } else {
+        const statNames = ["Strength", "Dexterity", "Constitution", "Wisdom", "Intelligence", "Charisma"];
+
+        const choicesArray = statNames.map((statName) => ({
+            description: `How many points would you like to spend in ${statName}?`,
+            nextState: null, // Set nextState based on your logic
+            statName: statName
+        }));
+
+        setupChoices(choicesArray, ""); // No base description for stats allocation
+
+        for (const statName of statNames) {
+            const points = window.prompt(`You have a total of ${statPoints} points to spend. How many points would you like to spend in ${statName}?`);
+            statPoints -= points;
+            player[`character${statName}`] = Number(points);
+        }
+
+        if (statPoints < 0) {
+            alert("You spent too many points!");
+            statPoints = 24;
+        } else {
+            const statsMessage = `Your current stats are Strength: ${player.characterStrength} Dexterity: ${player.characterDexterity} Constitution: ${player.characterConstitution} Wisdom: ${player.characterWisdom} Intelligence: ${player.characterIntelligence} Charisma: ${player.characterCharisma}`;
+            alert(statsMessage);
+            bug = 1;
+            characterCreation3();
+        }
+    }
+}
+
+function characterCreation3() {
+    const baseDescription = "What racial background do you come from? An Oathsworn Human, or an Elven Concordiate?";
+
+    const choicesArray = [
+        { description: "I am a Human. I come from the Human Empire.", nextState: characterCreationHuman },
+        { description: "I am an Elven Citizen.", nextState: characterCreationElf },
+        // Add other choices as needed
+    ];
+
+    setupChoices(choicesArray, baseDescription);
+}
+
+function characterCreationHuman() {
+    const baseDescription = "What background do you have with the Oathsworn Knights?";
+
+    const choicesArray = [
+        {
+            description: "I am an Oathsworn Conscript, a mercenary risen to Oathsworn status. Benefits: +1 Wis, +1 Str, +3 Power (Low-born Human Ancestry Keyword)",
+            nextState: characterCreation4
+        },
+        // Add other choices as needed
+    ];
+
+    setupChoices(choicesArray, baseDescription);
+}
+
+function characterCreationElf() {
+    const baseDescription = "What background do you in the Elven Concord?";
+
+    const choicesArray = [
+        {
+            description: "I am a Elven Sorcerer, and was one of the Developed, a child who after birth was incubated in a magical vat of Aether, to develop my magical abilities. Benefits: + 3 Slots, Vine Slash, Cure Wounds (Elven Ancestry Keyword)",
+            nextState: characterCreation4
+        },
+        // Add other choices as needed
+    ];
+
+    setupChoices(choicesArray, baseDescription);
+}
+
+function characterCreation4() {
+    setCharacterAttributes(player);
+    player.name = window.prompt("What is your character's name?");
+    characterCreation5();
+}
+
+function characterCreation5() {
+    console.log('successful loop');
+    intro();
+}
+
+function characterCreationHuman() {
+    const baseDescription = "What background do you have with the Oathsworn Knights?";
+
+    const choicesArray = [
+        {
+            description: "I am an Oathsworn Conscript, a mercenary risen to Oathsworn status. Benefits: +1 Wis, +1 Str, +3 Power (Low-born Human Ancestry Keyword)",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "Oathsworn Conscript"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+            }
+        },
+        {
+            description: "I am an Oathsworn Lieutenant, a middle ranking Oathsworn officer. Benefits: +3 Con +2 Power (Low-born Human Ancestry Keyword)",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "Oathsworn Lieutenant"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+             }
+        },
+        {
+            description: "I am a high ranking Oathsworn Commander, a person capable of ordering almost any Oathsworn. Benefits: +2 Cha, +1 Con, +1 Power (Influence Keyword)",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "Oathsworn Commander"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+            }
+        },
+        {
+            description: "I am an Oathsworn Lord, the highest of the base rankings. Oathsworn often bow and refer to me as My Lord. Benefits: +4 Cha, (Lord Keyword)",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "Oathsworn Lord"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+             }
+        },
+        {
+            description: "I am an Oathsworn Oracle, a cleric capable of seeing events in the future through prophetic visions. Benefits: + 2 Slots, Radiant Bolt, Cure Wounds (Oracle Keyword)",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "Oracle"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+             }
+        },
+        {
+            description: "I am a member of the The Shrouded, an Oathsworn organization who dedicate their lives to the dead. We are capable of speaking with the dead, and even seeing events of their past life through visions, similar to the Oracles.",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "The Shrouded"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+             }
+        },
+        {
+            description: "I am a member of the Tencaster family, a massive group of mages dedicated to the the Crown. Benefits: + 3 Slots, Chaos Bolt",
+            nextState: characterCreation4,
+            onClick: function () {
+                player.characterBackground = "Tencaster Mage"
+                applyBackgroundBonuses(player);
+                characterCreation4();
+             }
+        },
+        // Add other choices as needed
+    ];
+
+    setupChoices(choicesArray, baseDescription);
+}
+
+
+function characterCreationElf() {
+const baseDescription = "What background do you in the Elven Concord?";
+
+const choicesArray = [
+    {
+        description: "I am a Elven Sorcerer, and was one of the Developed, a child who afte birth was incubated in a magical vat of Aether, to develop my magical abilities. Benefits: + 3 Slots, Vine Slash, Cure Wounds (Elven Ancestry Keyword)",
+        nextState: characterCreation4,
+        onClick: function () {
+            player.characterBackground = "Elven Sorcerer"
+        }
+    },
+    {
+        description: "I am an Concord Knight, a Martially Inclined elven warrior. Benefits:  +1 Int, +1 Wis, +1 Con, +1 Slots +1 Power (Elven Ancestry Keyword)",
+        nextState: characterCreation4,
+        onClick: function () {
+            player.characterBackground = "Elven Sorcerer"
+        }
+    },
+    ]   
+}
+//
+
+//
+
+//
+
+// Game States
+
+//
+
+//
+
+//
+        function intro() {
+            var baseDescription = "You stand in the Capital city of Ballara, surrounded by the Knights of the Oathsworn, and the inhabitants of the Human Empire. A celebration is about to begin.";
+
+            var choicesArray = [
+                { description: "I walk into the King's Throne Room.", nextState: throneRoom1, },
+                { description: "I walk amongst the town, searching for nothing in particular.", nextState: ballaraOutskirts1 },
+                { description: "I search the town for the supplies I need for the journey. Perhaps a market has what I need.", nextState: ballaraMarket1 }
+            ];
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+
+
+        function throneRoom1() {
+            var baseDescription = "You walk into the massive marble halls of Ryndiir Terrasen's throne room, with him sitting upon the Polodyrium Throne surrounded by his loyal Oathsworn Knights.";
+
+            var choicesArray = [
+                { description: "I approach him, and ask his aids politely if I may address him.", nextState: throneRoom2 }
+            ];
+
+            var backgroundImage = '/OSP/throne.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function throneRoom2() {
+            var baseDescription = "You approach the throne room again, surrounded by the opulence and grandeur of the capital.";
+
+            var choicesArray = [
+                { description: "I bow and address the King formally.", nextState: someOtherFunction },
+                { description: "I leave the throne room.", nextState: intro }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function ballaraMarket1() {
+            var baseDescription = "After searching for about 30 minutes, you come across a respectable market with several vendors that catch your eye. You find an arms dealer, a smith/armorer, and a general store.";
+
+            var choicesArray = [
+                { description: "I approach the arms dealer.", nextState: armsDealer },
+                { description: "I approach the smithy.", nextState: smith },
+                { description: "I enter the General Store.", nextState: generalStore }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function armsDealer() {
+            var baseDescription = "You meet an older-looking Human man, who has various Oathsworn insignias and themed Oathsworn Weapons on display, as well as even a few Polodyrium artifacts within thick paned glass display cases. What are you looking to purchase?";
+
+            var choicesArray = [
+                { description: "Standard weaponry", nextState: armsDealerStandardWeapons },
+                { description: "I inquire as to the price of the Polodyrium Artifacts.", nextState: armsDealerPolodyriumWeapons },
+                { description: "I bid the man a good day, and leave.", nextState: ballaraMarket1 }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function armsDealerStandardWeapons() {
+            var baseDescription = "Ah, a good choice my friend. Plenty of weapons to go around.";
+
+            var choicesArray = [
+                { description: "Standard Longsword - Price: 25", nextState: function () { purchaseWeapon("Longsword", 25); } },
+                { description: "Standard Longbow - Price: 25", nextState: armsDealerPolodyriumWeapons },
+                { description: "Wooden Arrow x 10 - Price: 10", nextState: armsDealer },
+                { description: "Back one menu.", nextState: armsDealer }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function armsDealerPolodyriumWeapons() {
+            var baseDescription = "You meet an older-looking Human man, who has various Oathsworn insignias and themed Oathsworn Weapons on display, as well as even a few Polodyrium artifacts within thick paned glass display cases. What are you looking to purchase?";
+
+            var choicesArray = [
+                { description: "Standard weaponry", nextState: armsDealerStandardWeapons },
+                { description: "I inquire as to the price of the Polodyrium Artifacts.", nextState: armsDealerPolodyriumWeapons }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function ballaraOutskirts1() {
+            var baseDescription = "On the outskirts, you see a small shack that appears to have a bloodstain on the outside, and the sounds of someone rummaging around, tossing things and moving about inside. To your ears, it sounds like one pair of heavy footsteps, perhaps armored.";
+
+            var choicesArray = [
+                { description: "I attempt to lockpick the door.", nextState: function () { attemptLockpick(outskirtsStrengthCheck); } },
+                { description: "I attempt to brute force the door open!", nextState: outskirtsStrengthCheck },
+                { description: "I leave quietly.", nextState: throneRoom1 }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+
+        function debugMenu() {
+            var baseDescription = "I'm telling mom, ur hagging."
+            var choicesArray = [
+                { description: "Start Character Creation", nextState: characterCreation1 }
+            ];
+
+            var backgroundImage = '/OSP/ballara1.png'; // Set the appropriate background image URL
+            setupChoices(choicesArray, baseDescription, backgroundImage);
+        }
+    
+
+//
+
+//
+
+//
+
+// Logic Functions for Game States
+
+//
+
+//
+
+//
+        function purchaseWeapon(weapon, price) {
+            var x = window.prompt(`Are you want to purchase the ${weapon}? (y or n).`);
+            if (x === 'y') {
+                if (coinPurseGold > price) {
+                    coinPurseGold = coinPurseGold - price;
+                    myInventory.push(weapon);
+                    alert(`Thanks for your purchase! *${weapon} Added!*`);
+                    console.log(coinPurseGold);
+                    armsDealer();
+                } else {
+                    alert("You do not have enough gold!");
+                }
+            } else {
+                // Handle other cases
+            }
+        }
+
+        function forceLevelUp() {
+        alert("Bro, ur fuggin hagging!");
+        var y = window.prompt("How much XP are you giving?");
+    
+    if (!isNaN(y)) {
+        alert("You gained " + y + " XP!");
+        updatePlayerXP(player, Number(y));
+    } else {
+        alert("error");
+    }
+}
+
+        function attemptLockpick(callback) {
+            if (myInventory.includes("Lockpicks")) {
+                alert("After a half minute or so of trying tumblers, your lockpicking kit gets the job done! The door swings open.");
+                callback();
+            } else {
+                alert("You need Lockpicks!");
+            }
+        }
+
+        function outskirtsStrengthCheck() {
+            alert("You attempt to brute force the door open.");
+        }
+
+        function ballaraOutskirtsInterior() {
+            alert("You enter the shack and discover what lies inside.");
+        }
+
+        function smith() {
+            alert("You approach the smithy.");
+        }
+
+        function generalStore() {
+            alert("You enter the General Store.");
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            intro();
+        });
+    </script>
+</body>
+</html>

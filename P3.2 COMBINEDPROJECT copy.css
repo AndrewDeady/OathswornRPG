@@ -1,0 +1,125 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .application {
+    border: 4px double #888; /* Border for the entire application */
+    height: 80vh; /* Set the height of the application */
+    width: 80vw; /* Set the width of the application */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  
+  .panel {
+    flex: 1;
+    position: relative;
+    border-bottom: 4px double #888; /* Double border separating panels */
+  }
+  
+  .background-panel {
+    flex: 7;
+    position: relative;
+    background-size: contain 100%;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    background-image: url("/OSP/cityimage.png"); /* Set your default background image path */
+    background-size: 100% 100%;
+  }
+  
+  .information-panel {
+    overflow-y: auto; /* Allow vertical scrolling */
+    max-height: 100%; /* Adjust the maximum height as needed */
+    height: 400px; /* Set the height of the information panel to 400px */
+    width: 800px; /* Set the width of the information panel to 800px */
+    background-color: rgba(255, 255, 255, 0.7); /* Slightly transparent background */
+    position: absolute;
+    top: 35%; /* Adjust the top position */
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .information-panel.hidden {
+    display: none;
+  }
+  
+  .player-input-panel {
+    flex: 3;
+    display: flex;
+  }
+  
+  .text-panel,
+  .button-panel {
+    flex: 7;
+    background-image: url("/OSP/paperimage.jpg"); /* Set your background image path for both panels */
+    background-size: cover;
+    border-right: 4px double #888; /* Border separating text panel and button panel */
+  }
+  
+  .button-panel {
+      flex: 3;
+      display: flex;
+  }
+  
+  .button-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+  }
+  
+  button {
+      background-color: #555; /* Set your preferred button color */
+      color: #fff; /* Set your preferred button text color */
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  .clickable-text {
+    cursor: pointer;
+    color: red; /* Set the text color to red */
+  }
+  
+  .clickable-text:hover {
+    text-decoration: underline;
+    font-style: italic;
+    color: black; /* Set the text color to red */
+  }
+  
+  #descriptionContainer {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: black; /* Set the text color to red */
+  }
+  
+  #heading {
+    display: none;
+  }
+  
+  .bold-text {
+    font-weight: bold;
+  }
+  
+  .text-panel {
+  flex: 7;
+  background-image: url("/OSP/paperimage.jpg"); /* Set your background image path for both panels */
+  background-size: cover;
+  border-right: 4px double #888; /* Border separating text panel and button panel */
+  color: red; /* Set the text color to red */
+  font-weight: bold; /* Make the text bold */
+  padding: 20px; /* Add padding around the text */
+  }
