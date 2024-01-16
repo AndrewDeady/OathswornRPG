@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Maps</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+        }
+
+        .clickable-area {
+            position: absolute;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.8);
+            border: 2px solid #fff;
+            padding: 10px;
+            text-align: left;
+            color: #fff;
+            transition: border-color 0.3s, color 0.3s; /* Add transition for a smooth effect */
+        }
+
+        .clickable-area.active {
+            border: 2px solid red;
+            color: red;
+        }
+
+        #cityBackground1,
+        #cityBackground2 {
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Set background image behind buttons */
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <div id="mapButtonsContainer"></div>
+        <img src="osP/Ballara1.png" alt="City Background 1" id="cityBackground1">
+        <img src="osP/Ballara2.png" alt="City Background 2" id="cityBackground2" style="display: none;">
+    </div>
+    <script>
+  let lastPressedLocation = null;
+    let currentHour = new Date().getHours();
+    let currentMinute = new Date().getMinutes();
+    let currentYear = 3; // Current era
+    let currentDay = 84; // Day of the year
+
+    function moveToLocation(locationId) {
+        const currentLocation = lastPressedLocation || 1;
+        const distance = calculateDistance(currentLocation, locationId);
+        const travelMethod = 'horseCart';
+
+        const initialTime = getFormattedTime();
+        const departureLocation = lastPressedLocation ? cityMap[lastPressedLocation].name : 'Unknown';
+
+        const travelTime = calculateTravelTime(distance, travelMethod);
+        updateGameTime(travelTime);
+
+        const lastPressedButton = document.querySelector('.clickable-area.active');
+        if (lastPressedButton) {
+            lastPressedButton.classList.remove('active');
+            lastPressedButton.style.border = '2px solid #fff';
+            lastPressedButton.style.color = '#fff';
+        }
+
+        const currentButton = document.querySelector(`[data-location="${locationId}"]`);
+        if (currentButton) {
+            currentButton.classList.add('active');
+            currentButton.style.border = '2px solid red';
+            currentButton.style.color = 'red';
+        }
+
+        const presentTime = getFormattedTime();
+        const currentDate = getFormattedDate();
+        const travelMethodText = travelMethod === 'horseCart' ? 'Horse Cart' : 'Walking';
+
+        lastPressedLocation = locationId;
+
+        const arrivalLocation = cityMap[locationId].name;
+        const alertMessage = `Left ${departureLocation}, Arrived at ${arrivalLocation}\nInitial Time: ${initialTime}\nTravel Time: ${travelTime} hours\nPresent Time: ${presentTime}\nTravel Method: ${travelMethodText}\nCurrent Date: ${currentDate}`;
+        alert(alertMessage);
+
+        // Additional logic or functions based on the selected location
+        // For example, displayQuests();
+    }
+
+    function updateGameTime(travelTime) {
+        let totalMinutes = currentHour * 60 + currentMinute;
+        totalMinutes += travelTime * 60;
+
+        while (totalMinutes >= 27 * 60) {
+            totalMinutes -= 27 * 60;
+        }
+
+        currentHour = Math.floor(totalMinutes / 60);
+        currentMinute = Math.round(totalMinutes % 60);
+    }
+
+    function getFormattedTime() {
+        const totalMinutes = currentHour * 60 + currentMinute;
+        let formattedHour = Math.floor(totalMinutes / 60) % 27;
+        let ampm = '';
+
+        if (formattedHour >= 24) {
+            formattedHour -= 24;
+            ampm = 'TM';
+        } else {
+            ampm = formattedHour < 12 ? 'AM' : 'PM';
+            formattedHour = formattedHour % 12 || 12;
+        }
+
+        return `It's ${formattedHour}:${currentMinute < 10 ? '0' : ''}${currentMinute} ${ampm}.`;
+    }
+
+    function getFormattedDate() {
+        const seasons = ['Springs Bloom', 'Summers Grace', 'Falls Dawn', 'Winters Crest'];
+        const currentSeason = seasons[Math.floor((currentDay - 1) / 100)];
+        return `${currentSeason} ${currentDay % 100}-${currentYear}`;
+    }
+
+    function calculateDistance(location1, location2) {
+        const x1 = cityMap[location1].coordinates.x;
+        const y1 = cityMap[location1].coordinates.y;
+        const x2 = cityMap[location2].coordinates.x;
+        const y2 = cityMap[location2].coordinates.y;
+
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    }
+
+    function calculateTravelTime(distance, travelMethod) {
+        const baseTravelTime = 2; // in hours
+        const horseCartMultiplier = 0.5;
+
+        let adjustedTravelTime = baseTravelTime;
+
+        if (travelMethod === 'horseCart') {
+            adjustedTravelTime *= horseCartMultiplier;
+        }
+
+        return adjustedTravelTime;
+    }
+
+    const cityMap = {
+        1: { name: 'Market Square', description: 'Busy market with various stalls.', coordinates: { x: 200, y: 100 } },
+        2: { name: 'Residential Area', description: 'Quiet area with houses and gardens.', coordinates: { x: 400, y: 300 } },
+        // Add more locations as needed
+    };
+
+    function createLocationButtons(locationsData) {
+        const mapButtonsContainer = document.getElementById("mapButtonsContainer");
+
+        locationsData.forEach(location => {
+            const button = document.createElement("div");
+            button.classList.add("clickable-area");
+            button.setAttribute("data-location", location.id);
+            button.style.top = `${location.coordinates.y}px`;
+            button.style.left = `${location.coordinates.x}px`;
+            button.textContent = location.name;
+            button.onclick = () => moveToLocation(location.id);
+
+            // Check if the button is the last pressed button
+            if (location.id === lastPressedLocation) {
+                button.classList.add('active');
+                button.style.border = '2px solid red';
+                button.style.color = 'red';
+            }
+
+            mapButtonsContainer.appendChild(button);
+        });
+    }
+
+    function switchToMap(mapData) {
+        const mapButtonsContainer = document.getElementById("mapButtonsContainer");
+        mapButtonsContainer.innerHTML = ''; // Clear existing buttons
+
+        createLocationButtons(mapData);
+
+        // Update background image based on the map
+        document.getElementById("cityBackground1").style.display = mapData === map1Data ? 'block' : 'none';
+        document.getElementById("cityBackground2").style.display = mapData === map2Data ? 'block' : 'none';
+    }
+
+    // Example data for different maps
+    const map1Data = [
+        { id: 1, name: 'Market Square', coordinates: { x: 200, y: 100 } },
+        { id: 2, name: 'Residential Area', coordinates: { x: 400, y: 300 } },
+        // Add more locations for map 1 as needed
+    ];
+
+    const map2Data = [
+        { id: 3, name: 'Park', coordinates: { x: 250, y: 150 } },
+        { id: 4, name: 'Library', coordinates: { x: 450, y: 350 } },
+        // Add more locations for map 2 as needed
+    ];
+
+    // Initially switch to the first map
+    switchToMap(map1Data);
+    </script>
+</body>
+</html>
