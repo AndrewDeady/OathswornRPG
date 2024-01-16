@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map with Time, Distance, and Calendar</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+        }
+
+        .clickable-area {
+            position: absolute;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.2);
+            border: none;
+            padding: 0;
+            text-align: left;
+        }
+
+        #marketArea {
+            top: 100px;
+            left: 200px;
+            width: 100px;
+            height: 50px;
+        }
+
+        #residentialArea {
+            top: 300px;
+            left: 400px;
+            width: 150px;
+            height: 80px;
+        }
+
+        #cityBackground {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="mapButtonsContainer"></div>
+    <div class="map-container">
+        <img src="osP/Ballara1.png" alt="City Background" id="cityBackground">
+        <button class="clickable-area" data-location="1" id="marketArea" onclick="moveToLocation(1)">Market Square</button>
+        <button class="clickable-area" data-location="2" id="residentialArea" onclick="moveToLocation(2)">Residential Area</button>
+    </div>
+    <script>
+        
+// Function to handle location button click
+function moveToLocation(locationId) {
+    const currentLocation = 1; // Assume starting from location 1
+    const distance = calculateDistance(currentLocation, locationId);
+    const travelMethod = 'horseCart'; // Example travel method (you can change this)
+
+    // Capture initial time
+    const initialTime = getFormattedTime();
+
+    // Calculate travel time and update game time
+    const travelTime = calculateTravelTime(distance, travelMethod);
+    updateGameTime(travelTime);
+
+    // Display information in alert
+    const presentTime = getFormattedTime();
+    const currentDate = getFormattedDate();
+    const travelMethodText = travelMethod === 'horseCart' ? 'Horse Cart' : 'Walking'; // Adjust based on your travel methods
+
+    const alertMessage = `Initial Time: ${initialTime}\nTravel Time: ${travelTime} hours\nPresent Time: ${presentTime}\nTravel Method: ${travelMethodText}\nCurrent Date: ${currentDate}`;
+    alert(alertMessage);
+
+    // You can add additional logic or functions here based on the selected location
+    // For example, displayQuests();
+}
+        // Initialize game time
+        let currentHour = new Date().getHours();
+        let currentMinute = new Date().getMinutes();
+
+        // Initialize game date
+        let currentYear = 3; // Current era
+        let currentDay = 84; // Day of the year
+
+        // Helper function to update game time based on travel time
+        function updateGameTime(travelTime) {
+    let totalMinutes = currentHour * 60 + currentMinute;
+    totalMinutes += travelTime * 60; // Add travel time in minutes
+
+    while (totalMinutes >= 27 * 60) {
+        totalMinutes -= 27 * 60;
+    }
+
+    currentHour = Math.floor(totalMinutes / 60);
+    currentMinute = Math.round(totalMinutes % 60);
+}
+
+        // Function to get the formatted time
+// Function to get the formatted time
+function getFormattedTime() {
+    const totalMinutes = currentHour * 60 + currentMinute;
+    let formattedHour = Math.floor(totalMinutes / 60) % 27; // Use % 27 to handle Twilight Hours
+    let ampm = '';
+
+    // Check if it's Twilight Hours
+    if (formattedHour >= 24) {
+        formattedHour -= 24; // Adjust to 24-hour format
+        ampm = 'TM';
+    } else {
+        ampm = formattedHour < 12 ? 'AM' : 'PM';
+        formattedHour = formattedHour % 12 || 12;
+    }
+
+    return `It's ${formattedHour}:${currentMinute < 10 ? '0' : ''}${currentMinute} ${ampm}.`;
+}
+
+        // Function to get the formatted date
+        function getFormattedDate() {
+            const seasons = ['Springs Bloom', 'Summers Grace', 'Falls Dawn', 'Winters Crest'];
+            const currentSeason = seasons[Math.floor((currentDay - 1) / 100)];
+            return `${currentSeason} ${currentDay % 100}-${currentYear}`;
+        }
+
+        // Example distance tracking (simplified)
+        function calculateDistance(location1, location2) {
+            // Placeholder logic for distance calculation
+            return Math.abs(location2 - location1);
+        }
+
+        // Example travel method and travel time calculation
+        function calculateTravelTime(distance, travelMethod) {
+            // Placeholder logic for travel time calculation
+            const baseTravelTime = 2; // in hours
+            const horseCartMultiplier = 0.5;
+
+            let adjustedTravelTime = baseTravelTime;
+
+            if (travelMethod === 'horseCart') {
+                adjustedTravelTime *= horseCartMultiplier;
+            }
+
+            return adjustedTravelTime;
+        }
+
+        // Example map representation
+        const cityMap = {
+            1: { name: 'Market Square', description: 'Busy market with various stalls.' },
+            2: { name: 'Residential Area', description: 'Quiet area with houses and gardens.' },
+            // Add more locations as needed
+        };
+
+        // Function to display quests
+        function displayQuests() {
+            console.log('Quests are displayed.');
+        }
+
+        // Function to create location buttons dynamically
+        function createLocationButtons() {
+            const mapButtonsContainer = document.getElementById("mapButtonsContainer");
+
+            // Iterate through cityMap to create buttons
+            Object.keys(cityMap).forEach(location => {
+                const button = document.createElement("button");
+                button.classList.add("clickable-area");
+                button.setAttribute("data-location", location);
+                button.textContent = cityMap[location].name;
+                button.onclick = () => moveToLocation(parseInt(location));
+                mapButtonsContainer.appendChild(button);
+            });
+        }
+
+        // Call the function to create location buttons
+        createLocationButtons();
+    </script>
+</body>
+</html>
